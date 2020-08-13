@@ -1,13 +1,13 @@
 exports.up = async function (knex) {
-  return knex.schema.createTable('schedules-reuniao', (table) => {
+  return knex.schema.createTable('schedules-meeting', (table) => {
     table.increments('id').primary();
     table.integer('from').notNullable();
     table.integer('to').notNullable();
     table
-      .integer('reuniao_id')
+      .integer('meeting_id')
       .notNullable()
       .references('id')
-      .inTable('reunioes')
+      .inTable('meetings')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
   });

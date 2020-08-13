@@ -3,10 +3,10 @@ exports.up = async function (knex) {
     table.increments('id').primary();
     table.integer('user_id').notNullable().references('id').inTable('users');
     table
-      .integer('reuniao_id')
+      .integer('meeting_id')
       .notNullable()
       .references('id')
-      .inTable('reunioes')
+      .inTable('meetings')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
   });

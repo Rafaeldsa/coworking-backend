@@ -12,7 +12,11 @@ module.exports = {
       )
       .select('*');
 
-    res.json(workStations);
+    const rooms = await knex('rooms')
+      .join('workstations', 'rooms.workstation_id', '=', 'workstations.id')
+      .select('rooms.name');
+
+    res.json({ workStations, rooms });
   },
   async show(req, res) {
     const { id } = req.params;
@@ -38,7 +42,12 @@ module.exports = {
         'workstation-schedule.to'
       );
 
-    return res.json({ workstation, schedules });
+    const rooms = await knex('rooms')
+      .join('workstations', 'rooms.workstation_id', '=', 'workstations.id')
+      .where('workstations.id', id)
+      .select('*');
+
+    return res.json({ workstation, schedules, rooms });
   },
   async create(req, res) {
     const { name, description, schedule } = req.body;
@@ -123,7 +132,7 @@ module.exports = {
   },
 
   async deleteSchedule(req, res) {
-    const { schedule_id } = req.query;
+    const { schedule_id } = req.params;
 
     try {
       await knex('workstation-schedule').where('id', schedule_id).delete();
