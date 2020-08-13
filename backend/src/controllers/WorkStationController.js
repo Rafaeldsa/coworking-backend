@@ -32,6 +32,7 @@ module.exports = {
       )
       .where('workstations.id', id)
       .select(
+        'workstation-schedule.id',
         'workstation-schedule.week_day',
         'workstation-schedule.from',
         'workstation-schedule.to'
@@ -122,26 +123,16 @@ module.exports = {
   },
 
   async deleteSchedule(req, res) {
-    const { workStation_id } = req.params;
     const { schedule_id } = req.query;
 
     try {
-      await knex('workstation-schedule')
-        .join(
-          'workstations',
-          'workstation-schedule.workstation_id',
-          '=',
-          'workstations.id'
-        )
-        .where('id', schedule_id)
-        .where('workstations.id', workStation_id)
-        .delete();
+      await knex('workstation-schedule').where('id', schedule_id).delete();
       return res.status(204).json({
         message: 'Schedule deleted',
       });
     } catch (err) {
-      res.statu(400).json({
-        message: 'Error',
+      res.status(400).json({
+        message: err.message,
       });
     }
   },
