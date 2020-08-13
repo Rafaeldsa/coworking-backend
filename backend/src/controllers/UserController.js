@@ -1,5 +1,4 @@
 const knex = require('../database/connection');
-const { update } = require('../database/connection');
 
 module.exports = {
   async index(req, res) {
@@ -19,6 +18,7 @@ module.exports = {
           email,
           senha,
         });
+
         res.status(200).send({
           message: 'Cadastro realizado com sucesso!',
         });
@@ -37,6 +37,7 @@ module.exports = {
         endereco_pessoal,
         biografia,
         email,
+        isAdmin,
       } = req.body;
       await knex('users').where('id', id).update({
         nome,
@@ -45,6 +46,7 @@ module.exports = {
         endereco_pessoal,
         biografia,
         email,
+        isAdmin,
       });
 
       res.json({ message: 'Campos alterados!' });

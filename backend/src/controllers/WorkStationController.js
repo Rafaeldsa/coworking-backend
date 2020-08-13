@@ -1,0 +1,148 @@
+const knex = require('../database/connection');
+const convertHourToMinutes = require('../utils/convertHourToMinutes');
+
+module.exports = {
+  async index(req, res) {
+    const workStations = await knex('workstations')
+      .join(
+        'workstation-schedule',
+        'workstations.id',
+        '=',
+        'workstation-schedule.workstation_id'
+      )
+      .select('*');
+
+    res.json(workStations);
+  },
+  async show(req, res) {
+    const { id } = req.params;
+
+    const workstation = await knex('workstations').where('id', id).first();
+
+    if (!workstation) {
+      return response.status(400).json({ message: 'WorkStation not found' });
+    }
+
+    const schedules = await knex('workstation-schedule')
+      .join(
+        'workstations',
+        'workstation-schedule.workstation_id',
+        '=',
+        'workstations.id'
+      )
+      .where('workstations.id', id)
+      .select(
+        'workstation-schedule.week_day',
+        'workstation-schedule.from',
+        'workstation-schedule.to'
+      );
+
+    return res.json({ workstation, schedules });
+  },
+  async create(req, res) {
+    const { name, description, schedule } = req.body;
+
+    const trx = await knex.transaction();
+
+    try {
+      const insertedWorkStationsIds = await trx('workstations').insert({
+        name,
+        description,
+      });
+
+      const workStation_id = insertedWorkStationsIds[0];
+
+      const wokrStationSchedule = schedule.map((scheduleItem) => {
+        return {
+          workStation_id,
+          week_day: scheduleItem.week_day,
+          from: convertHourToMinutes(scheduleItem.from),
+          to: convertHourToMinutes(scheduleItem.to),
+        };
+      });
+
+      await trx('workstation-schedule').insert(wokrStationSchedule);
+
+      await trx.commit();
+
+      return res.status(201).json({
+        message: 'WorkStation criada',
+      });
+    } catch (err) {
+      await trx.rollback();
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+  },
+  async update(req, res) {
+    const { id } = req.params;
+    const { name, description } = req.body;
+
+    try {
+      await knex('workstations').where('id', id).update({
+        name,
+        description,
+      });
+
+      return res.status(201).json({
+        message: 'WorkStation alterada',
+      });
+    } catch (err) {
+      await trx.rollback();
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+  },
+  async delete(req, res) {
+    const { id } = req.params;
+    const { user_email } = req.query;
+
+    const trx = await knex.transaction();
+    try {
+      const isAdmin = await trx('users')
+        .where('email', user_email)
+        .select('users.isAdmin');
+      if (!isAdmin) {
+        return res.status(401).json({ error: 'Operation not permitted.' });
+      } else {
+        await trx('workstations').where('id', id).delete();
+
+        await trx.commit();
+        return res.status(204).json({
+          message: 'Worsktation deleted',
+        });
+      }
+    } catch (err) {
+      res.statu(400).json({
+        message: 'Error',
+      });
+    }
+  },
+
+  async deleteSchedule(req, res) {
+    const { workStation_id } = req.params;
+    const { schedule_id } = req.query;
+
+    try {
+      await knex('workstation-schedule')
+        .join(
+          'workstations',
+          'workstation-schedule.workstation_id',
+          '=',
+          'workstations.id'
+        )
+        .where('id', schedule_id)
+        .where('workstations.id', workStation_id)
+        .delete();
+      return res.status(204).json({
+        message: 'Schedule deleted',
+      });
+    } catch (err) {
+      res.statu(400).json({
+        message: 'Error',
+      });
+    }
+  },
+};
