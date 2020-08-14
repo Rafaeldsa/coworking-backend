@@ -1,4 +1,5 @@
 const knex = require('../database/connection');
+const { sendEmail } = require('./SessionController');
 
 module.exports = {
   async index(req, res) {
@@ -14,10 +15,14 @@ module.exports = {
       if (existUser.length !== 0) {
         res.json({ message: 'Email já cadastrado!' });
       } else {
-        await knex('users').insert({
+        const insertedUsers = await knex('users').insert({
           email,
           senha,
         });
+
+        const user_id = insertedUsers[0];
+
+        sendEmail(user_id, email);
 
         res.status(200).send({
           message: 'Cadastro realizado com sucesso!',

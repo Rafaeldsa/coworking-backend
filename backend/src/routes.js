@@ -6,27 +6,59 @@ const userController = require('./controllers/UserController');
 const workStationController = require('./controllers/WorkStationController');
 const meetingController = require('./controllers/MeetingController');
 const meetingRoomController = require('./controllers/MeetingRoomController');
+const sessionController = require('./controllers/SessionController');
 
 routes.post('/create-user', userController.create);
 routes.get('/users', userController.index);
-routes.put('/user/:id', userController.update);
+routes.put('/user/:id', sessionController.verifyJWT, userController.update);
 
-routes.post('/create-workstation', workStationController.create);
-routes.get('/workstations', workStationController.index);
-routes.get('/workstations/:id', workStationController.show);
-routes.put('/workstations/:id', workStationController.update);
-routes.delete('/workstations/:id', workStationController.delete);
+routes.post(
+  '/create-workstation',
+  sessionController.verifyJWT,
+  workStationController.create
+);
+routes.get(
+  '/workstations',
+  sessionController.verifyJWT,
+  workStationController.index
+);
+routes.get(
+  '/workstations/:id',
+  sessionController.verifyJWT,
+  workStationController.show
+);
+routes.put(
+  '/workstations/:id',
+  sessionController.verifyJWT,
+  workStationController.update
+);
+routes.delete(
+  '/workstations/:id',
+  sessionController.verifyJWT,
+  workStationController.delete
+);
 routes.delete(
   '/workstations/schedule/:schedule_id',
+  sessionController.verifyJWT,
   workStationController.deleteSchedule
 );
 
-routes.get('/room', meetingRoomController.index);
-routes.post('/room', meetingRoomController.create);
-routes.put('/room/:id', meetingRoomController.update);
-routes.delete('/room/:room_id', meetingRoomController.delete);
+routes.get('/room', sessionController.verifyJWT, meetingRoomController.index);
+routes.post('/room', sessionController.verifyJWT, meetingRoomController.create);
+routes.put(
+  '/room/:id',
+  sessionController.verifyJWT,
+  meetingRoomController.update
+);
+routes.delete(
+  '/room/:room_id',
+  sessionController.verifyJWT,
+  meetingRoomController.delete
+);
 
-routes.get('/meeting', meetingController.index);
-routes.post('/meeting', meetingController.create);
+routes.get('/meeting', sessionController.verifyJWT, meetingController.index);
+routes.post('/meeting', sessionController.verifyJWT, meetingController.create);
 
+routes.post('/session/login', sessionController.login);
+routes.get('/session/confirmation/:token', sessionController.confirmation);
 module.exports = routes;

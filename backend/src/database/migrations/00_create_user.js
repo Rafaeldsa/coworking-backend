@@ -9,6 +9,7 @@ exports.up = async function (knex) {
     table.string('endereco_pessoal').notNullable().default('pb');
     table.string('biografia');
     table.boolean('isAdmin').default(false);
+    table.boolean('confirmed').default(false);
   });
 };
 

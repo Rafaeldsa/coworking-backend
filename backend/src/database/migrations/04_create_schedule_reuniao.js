@@ -14,5 +14,5 @@ exports.up = async function (knex) {
 };
 
 exports.down = async function (knex) {
-  return knex.schema.dropTable('schedules-reuniao');
+  return knex.schema.dropTable('schedules-meeting');
 };
