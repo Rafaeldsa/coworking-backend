@@ -99,7 +99,7 @@ module.exports = {
         confirmed: true,
       });
 
-      return res.redirect('http://localhost:3000/workstations/list");
+      return res.redirect('http://localhost:3000/workstations/list');
     } catch (error) {
       throw new Error('Erro ao confirmar email!');
     }
