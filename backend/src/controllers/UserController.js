@@ -10,10 +10,14 @@ module.exports = {
   async create(req, res) {
     const { email, senha } = req.body;
 
+    if (senha.length < 6) {
+      throw new Error('Small password');
+    }
+
     try {
       const existUser = await knex('users').where('email', email).select('id');
       if (existUser.length !== 0) {
-        res.json({ message: 'Email já cadastrado!' });
+        res.json({ message: 'E-mail already registered' });
       } else {
         const insertedUsers = await knex('users').insert({
           email,
@@ -25,7 +29,7 @@ module.exports = {
         sendEmail(user_id, email);
 
         res.status(200).send({
-          message: 'Cadastro realizado com sucesso!',
+          message: 'Successful registration',
         });
       }
     } catch (error) {
