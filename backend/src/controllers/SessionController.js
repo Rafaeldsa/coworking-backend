@@ -99,7 +99,8 @@ module.exports = {
         confirmed: true,
       });
 
-      return res.redirect('http://localhost:3000/workstations/list');
+      res.json('user_id', id);
+      return res.redirect('http://localhost:3000/editing-user');
     } catch (error) {
       throw new Error('Erro ao confirmar email!');
     }
