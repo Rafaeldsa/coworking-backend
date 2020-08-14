@@ -10,14 +10,16 @@ module.exports = {
     try {
       const authUser = await knex('users').where('email', email).select('*');
 
-      if (authUser.length === 0) {
-        throw new Error('Usuario não encontrado!');
+      console.log(authUser[0].senha);
+
+      if (authUser[0] === null) {
+        throw new Error('Usuario não cadastrado!');
+      }
+      if (!authUser[0].confirmed) {
+        throw new Error('Por favor confirme seu email');
       }
 
-      if (!authUser.confirmed) {
-        throw new Error('Por favor, confirme seu email!');
-      }
-      if (senha === authUser.senha) {
+      if (senha === authUser[0].senha) {
         var token = jwt.sign({ email }, process.env.SECRET, {
           expiresIn: 604800, // expires in 1 week
         });
@@ -69,7 +71,7 @@ module.exports = {
         },
       });
 
-      const url = `http://localhost:3333/session/confirmation/${emailToken}`;
+      const url = `http://localhost:3001/session/confirmation/${emailToken}`;
 
       const mailOptions = {
         from: process.env.EMAIL,
@@ -97,7 +99,7 @@ module.exports = {
         confirmed: true,
       });
 
-      return res.redirect(`http://localhost:3333/user/${id}`);
+      return res.redirect('http://localhost:3000/');
     } catch (error) {
       throw new Error('Erro ao confirmar email!');
     }

@@ -10,7 +10,7 @@ module.exports = {
         '=',
         'workstation-schedule.workstation_id'
       )
-      .select('*');
+      .select(['workstations.*', 'workstation-schedule.*']);
 
     const rooms = await knex('rooms')
       .join('workstations', 'rooms.workstation_id', '=', 'workstations.id')
