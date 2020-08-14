@@ -10,7 +10,7 @@ module.exports = {
     try {
       const authUser = await knex('users').where('email', email).select('*');
 
-      console.log(authUser[0].senha);
+      const id = authUser[0].id;
 
       if (authUser[0] === null) {
         throw new Error('Usuario não cadastrado!');
@@ -20,7 +20,7 @@ module.exports = {
       }
 
       if (senha === authUser[0].senha) {
-        var token = jwt.sign({ email }, process.env.SECRET, {
+        var token = jwt.sign({ id }, process.env.SECRET, {
           expiresIn: 604800, // expires in 1 week
         });
 
@@ -50,7 +50,7 @@ module.exports = {
           .send({ auth: false, message: 'Failed to authenticate token.' });
 
       // se tudo estiver ok, salva no request para uso posterior
-      req.userEmail = decoded.email;
+      req.userId = decoded.id;
       next();
     });
   },
@@ -99,7 +99,7 @@ module.exports = {
         confirmed: true,
       });
 
-      res.json('user_id', id);
+      res.header('userID', id);
       return res.redirect('http://localhost:3000/editing-user');
     } catch (error) {
       throw new Error('Erro ao confirmar email!');

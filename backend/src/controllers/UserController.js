@@ -48,6 +48,16 @@ module.exports = {
         email,
         isAdmin,
       } = req.body;
+
+      const userEmail = await knex('users')
+        .where('id', id)
+        .select('users.email');
+
+      if (userEmail !== email) {
+        await knex('users').where('id', id).update({ confirmed: false });
+        sendEmail(id, email);
+      }
+
       await knex('users').where('id', id).update({
         nome,
         data_nascimento,
@@ -60,7 +70,7 @@ module.exports = {
 
       res.json({ message: 'Campos alterados!' });
     } catch (err) {
-      res.json({ message: 'Erro!' });
+      res.json({ message: err.message });
     }
   },
 };
