@@ -9,7 +9,7 @@ const meetingRoomController = require('./controllers/MeetingRoomController');
 const sessionController = require('./controllers/SessionController');
 
 routes.post('/create-user', userController.create);
-routes.get('/users', userController.index);
+routes.get('/users/list', userController.index);
 routes.put('/user/:id', sessionController.verifyJWT, userController.update);
 
 routes.post(
@@ -18,22 +18,22 @@ routes.post(
   workStationController.create
 );
 routes.get(
-  '/workstations',
+  '/workstations/list',
   sessionController.verifyJWT,
   workStationController.index
 );
 routes.get(
-  '/workstations/:id',
+  '/workstation/:id',
   sessionController.verifyJWT,
   workStationController.show
 );
 routes.put(
-  '/workstations/:id',
+  '/workstation/:id',
   sessionController.verifyJWT,
   workStationController.update
 );
 routes.delete(
-  '/workstations/:id',
+  '/workstation/:id',
   sessionController.verifyJWT,
   workStationController.delete
 );

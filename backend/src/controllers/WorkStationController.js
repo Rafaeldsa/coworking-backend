@@ -3,20 +3,9 @@ const convertHourToMinutes = require('../utils/convertHourToMinutes');
 
 module.exports = {
   async index(req, res) {
-    const workStations = await knex('workstations')
-      .join(
-        'workstation-schedule',
-        'workstations.id',
-        '=',
-        'workstation-schedule.workstation_id'
-      )
-      .select(['workstations.*', 'workstation-schedule.*']);
+    const workStations = await knex('workstations').select('*');
 
-    const rooms = await knex('rooms')
-      .join('workstations', 'rooms.workstation_id', '=', 'workstations.id')
-      .select('rooms.name');
-
-    res.json({ workStations, rooms });
+    res.json(workStations);
   },
   async show(req, res) {
     const { id } = req.params;
@@ -44,8 +33,8 @@ module.exports = {
 
     const rooms = await knex('rooms')
       .join('workstations', 'rooms.workstation_id', '=', 'workstations.id')
-      .where('workstations.id', id)
-      .select('*');
+      .where('workstation_id', id)
+      .select('rooms.name');
 
     return res.json({ workstation, schedules, rooms });
   },
