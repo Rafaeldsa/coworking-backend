@@ -58,6 +58,11 @@ routes.delete(
 
 routes.get('/meeting', sessionController.verifyJWT, meetingController.index);
 routes.post('/meeting', sessionController.verifyJWT, meetingController.create);
+routes.post(
+  '/meeting-participant',
+  sessionController.verifyJWT,
+  meetingController.insereParticipante
+);
 
 routes.post('/session/login', sessionController.login);
 routes.get('/session/confirmation/:token', sessionController.confirmation);

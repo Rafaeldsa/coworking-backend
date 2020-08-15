@@ -13,7 +13,7 @@ module.exports = {
     const workstation = await knex('workstations').where('id', id).first();
 
     if (!workstation) {
-      return response.status(400).json({ message: 'WorkStation not found' });
+      return res.status(400).json({ message: 'WorkStation not found' });
     }
 
     const schedules = await knex('workstation-schedule')
@@ -96,25 +96,17 @@ module.exports = {
   },
   async delete(req, res) {
     const { id } = req.params;
-    const { user_email } = req.query;
 
     const trx = await knex.transaction();
     try {
-      const isAdmin = await trx('users')
-        .where('email', user_email)
-        .select('users.isAdmin');
-      if (!isAdmin) {
-        return res.status(401).json({ error: 'Operation not permitted.' });
-      } else {
-        await trx('workstations').where('id', id).delete();
+      await trx('workstations').where('id', id).delete();
 
-        await trx.commit();
-        return res.status(204).json({
-          message: 'Worsktation deleted',
-        });
-      }
+      await trx.commit();
+      return res.status(204).json({
+        message: 'Worsktation deleted',
+      });
     } catch (err) {
-      res.statu(400).json({
+      res.status(400).json({
         message: 'Error',
       });
     }

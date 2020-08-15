@@ -15,7 +15,7 @@ module.exports = {
     res.json(meetings);
   },
   async create(req, res) {
-    const { name, description, creator, room_id, schedules } = req.body;
+    const { creator, description, name, room_id, schedules } = req.body;
 
     try {
       const insertedMeetingIds = await knex('meetings').insert({
@@ -40,6 +40,22 @@ module.exports = {
       return res.status(201).json({
         message: 'Meeting created',
       });
+    } catch (err) {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+  },
+  async insereParticipante(req, res) {
+    const { user_id, meeting_id } = req.body;
+
+    try {
+      await knex('participants').insert({
+        user_id,
+        meeting_id,
+      });
+      const participante = await knex('users').where('id', user_id).first();
+      return res.status(201).json(participante);
     } catch (err) {
       return res.status(400).json({
         error: err.message,
