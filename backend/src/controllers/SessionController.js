@@ -25,7 +25,7 @@ module.exports = {
         });
 
         res.header('authorization', token);
-        return res.json({ auth: true, token: token });
+        return res.json({ auth: true, token: token, userId: id });
       } else {
         res.status(404).json({
           message: 'User not found!',

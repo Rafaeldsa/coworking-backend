@@ -9,7 +9,7 @@ const meetingRoomController = require('./controllers/MeetingRoomController');
 const sessionController = require('./controllers/SessionController');
 
 routes.post('/create-user', userController.create);
-routes.get('/users/list', userController.index);
+routes.get('/users/list', sessionController.verifyJWT, userController.index);
 routes.put('/user/:id', sessionController.verifyJWT, userController.update);
 
 routes.post(
