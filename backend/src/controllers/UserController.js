@@ -53,7 +53,9 @@ module.exports = {
         .where('id', id)
         .select('users.email');
 
-      if (userEmail !== email) {
+      const email_user = userEmail[0].email;
+
+      if ((email !== null, email_user !== email)) {
         await knex('users').where('id', id).update({ confirmed: false });
         sendEmail(id, email);
       }

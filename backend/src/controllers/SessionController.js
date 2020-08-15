@@ -16,7 +16,40 @@ module.exports = {
         throw new Error('Usuario não cadastrado!');
       }
       if (!authUser[0].confirmed) {
-        throw new Error('Por favor confirme seu email');
+        try {
+          var emailToken = jwt.sign({ id }, process.env.EMAIL, {
+            expiresIn: 604800, // expires in 1 week
+          });
+
+          var transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+              user: process.env.EMAIL,
+              pass: process.env.SENHA,
+            },
+          });
+
+          const url = `http://localhost:3001/session/confirmation/${emailToken}`;
+
+          const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Confirm Email',
+            html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email enviado: ' + info.response);
+            }
+          });
+        } catch (e) {
+          throw new Error(e);
+        }
       }
 
       if (senha === authUser[0].senha) {
